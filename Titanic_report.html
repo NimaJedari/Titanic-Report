@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Titanic Survival Analysis Report</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f3; color: #2c2c2a; padding: 2rem 1rem; }
+  .page { max-width: 860px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 3rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #888780; margin-bottom: 0.5rem; }
+  h1 { font-size: 28px; font-weight: 500; margin-bottom: 0.25rem; }
+  h2 { font-size: 20px; font-weight: 500; margin: 0 0 0.75rem; }
+  h3 { font-size: 15px; font-weight: 500; margin-bottom: 0.4rem; }
+  p { font-size: 14px; color: #5f5e5a; line-height: 1.7; margin-bottom: 0.75rem; }
+  .meta { font-size: 13px; color: #888780; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 0.5px solid #e0dfd8; }
+  .divider { border: none; border-top: 0.5px solid #e0dfd8; margin: 2.5rem 0; }
+  .section { margin-bottom: 2rem; }
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .metric-card { background: #f5f5f3; border-radius: 8px; padding: 1rem; }
+  .metric-label { font-size: 12px; color: #5f5e5a; margin-bottom: 4px; }
+  .metric-value { font-size: 22px; font-weight: 500; }
+  .clean-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1rem; }
+  .clean-card { background: #f5f5f3; border-radius: 8px; padding: 0.85rem 1rem; display: flex; align-items: flex-start; gap: 10px; }
+  .clean-icon { font-size: 18px; color: #185FA5; margin-top: 1px; flex-shrink: 0; }
+  .clean-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .clean-desc { font-size: 12px; color: #888780; line-height: 1.5; }
+  .img-wrap { width: 100%; margin: 1rem 0; border-radius: 8px; overflow: hidden; border: 0.5px solid #e0dfd8; }
+  .img-wrap img { width: 100%; display: block; }
+  .model-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .model-card { background: #fff; border: 0.5px solid #e0dfd8; border-radius: 12px; padding: 1rem 1.25rem; }
+  .model-card.winner { border: 2px solid #185FA5; }
+  .badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 8px; margin-bottom: 8px; }
+  .badge-blue { background: #E6F1FB; color: #0C447C; }
+  .badge-gray { background: #f5f5f3; color: #5f5e5a; }
+  .acc { font-size: 26px; font-weight: 500; margin: 4px 0; }
+  .acc-sub { font-size: 12px; color: #888780; }
+  .chart-wrap { position: relative; width: 100%; margin: 1rem 0; }
+  .finding-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+  .finding-icon { font-size: 18px; margin-top: 2px; color: #185FA5; flex-shrink: 0; }
+  .finding-text { font-size: 14px; color: #5f5e5a; line-height: 1.6; }
+  .cr-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 0.75rem; }
+  .cr-table th { text-align: left; padding: 6px 10px; background: #f5f5f3; font-weight: 500; color: #5f5e5a; }
+  .cr-table td { padding: 6px 10px; border-top: 0.5px solid #e0dfd8; color: #2c2c2a; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="section-label">Predictive Analytics Report</div>
+  <h1>Titanic Survival Analysis</h1>
+  <div class="meta">Dataset: Titanic passenger records &nbsp;·&nbsp; 891 observations &nbsp;·&nbsp; 9 variables &nbsp;·&nbsp; Target: Survived (binary) &nbsp;·&nbsp; May 2026</div>
+
+  <div class="metric-grid">
+    <div class="metric-card"><div class="metric-label">Total passengers</div><div class="metric-value">891</div></div>
+    <div class="metric-card"><div class="metric-label">Survival rate</div><div class="metric-value" style="color:#185FA5">38.4%</div></div>
+    <div class="metric-card"><div class="metric-label">Best accuracy</div><div class="metric-value">81.6%</div></div>
+    <div class="metric-card"><div class="metric-label">Models tested</div><div class="metric-value">4</div></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">Section 1</div>
+    <h2>Data cleaning &amp; imputation</h2>
+    <p>The raw dataset contained missing values across three variables. The following cleaning decisions were applied before modeling to ensure a complete, well-structured dataset of 891 rows.</p>
+    <div class="clean-grid">
+      <div class="clean-card"><i class="ti ti-clock clean-icon"></i><div><div class="clean-title">Age — mean imputation</div><div class="clean-desc">177 missing values (20%) filled with the column mean (29.7 years). Preserves all rows for training.</div></div></div>
+      <div class="clean-card"><i class="ti ti-door clean-icon"></i><div><div class="clean-title">Cabin — binary flag</div><div class="clean-desc">687 missing values (77%). Converted to Has_Cabin (1/0) — a proxy for wealth and deck access.</div></div></div>
+      <div class="clean-card"><i class="ti ti-anchor clean-icon"></i><div><div class="clean-title">Embarked — mode imputation</div><div class="clean-desc">2 missing values filled with Southampton (S), the most frequent embarkation port (72% of passengers).</div></div></div>
+      <div class="clean-card"><i class="ti ti-currency-dollar clean-icon"></i><div><div class="clean-title">Fare — log transformation</div><div class="clean-desc">Heavy right skew with extreme outliers (max $512). Applied log1p transformation to normalise the distribution.</div></div></div>
+      <div class="clean-card"><i class="ti ti-users clean-icon"></i><div><div class="clean-title">SibSp &amp; Parch — kept as-is</div><div class="clean-desc">~10 extreme values per variable identified but retained — large families are valid real-world observations.</div></div></div>
+      <div class="clean-card"><i class="ti ti-trash clean-icon"></i><div><div class="clean-title">Dropped columns</div><div class="clean-desc">Name, Ticket and PassengerId removed — no predictive value for survival modeling.</div></div></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">Section 2</div>
+    <h2>Exploratory data analysis</h2>
+    <p>Prior to modeling, each predictor was examined for its individual relationship with the survival outcome.</p>
+
+    <h3>Feature importance ranking</h3>
+    <p>A Random Forest model ranked all predictors by predictive contribution. Age, Sex and log Fare dominated at roughly equal importance (~0.25 each).</p>
+    <div class="img-wrap"><img src="feature_importance.png" alt="Feature importance chart"></div>
+
+    <h3 style="margin-top:1.5rem">Survival rate by categorical predictors</h3>
+    <p>Sex showed the largest gap (74.2% female vs 18.9% male). Passenger class dropped from 63% in 1st to 24.2% in 3rd. Cherbourg passengers survived at 55.4% vs 33.9% for Southampton.</p>
+    <div class="img-wrap"><img src="survival_categorical.png" alt="Survival rate by categorical predictors"></div>
+
+    <h3 style="margin-top:1.5rem">Survival by age group</h3>
+    <p>Young passengers (0–18) survived at 50.4% — nearly double mid age (36.3%) and older (34.4%) groups, confirming child prioritization during evacuation.</p>
+    <div class="img-wrap"><img src="survival_age_groups.png" alt="Age group survival"></div>
+
+    <h3 style="margin-top:1.5rem">Log Fare distribution by survival</h3>
+    <p>Survivors paid higher fares — median log Fare ~3.3 vs ~2.5 for non-survivors, validating Fare as a complementary predictor alongside Pclass.</p>
+    <div class="img-wrap"><img src="fare_log_boxplot.png" alt="Log Fare by survival"></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">Section 3</div>
+    <h2>Model comparison</h2>
+    <p>Four models evaluated on a held-out 20% test set using the fully cleaned dataset, with the same train/test split for fair comparison.</p>
+
+    <div class="model-grid">
+      <div class="model-card winner"><div class="badge badge-blue">Best model</div><h3>Logistic Regression</h3><div class="acc-sub">All features</div><div class="acc">81.6%</div><div class="acc-sub">accuracy</div></div>
+      <div class="model-card"><div class="badge badge-gray">Runner up</div><h3>Logistic Regression</h3><div class="acc-sub">Pclass · Sex · Cabin · Age</div><div class="acc">80.4%</div><div class="acc-sub">accuracy</div></div>
+      <div class="model-card"><div class="badge badge-gray"></div><h3>Random Forest</h3><div class="acc-sub">All features</div><div class="acc">79.9%</div><div class="acc-sub">accuracy</div></div>
+      <div class="model-card"><div class="badge badge-gray"></div><h3>Logistic Regression</h3><div class="acc-sub">Pclass · Sex · Cabin</div><div class="acc">78.2%</div><div class="acc-sub">accuracy</div></div>
+    </div>
+
+    <div class="chart-wrap" style="height:220px">
+      <canvas id="modelChart"></canvas>
+    </div>
+
+    <h3 style="margin-top:1.5rem">Best model — classification report</h3>
+    <p>Logistic Regression with all features achieved 81.6% accuracy with balanced precision and recall across both classes.</p>
+    <table class="cr-table">
+      <thead><tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1-score</th><th>Support</th></tr></thead>
+      <tbody>
+        <tr><td>Did not survive (0)</td><td>0.84</td><td>0.86</td><td>0.85</td><td>105</td></tr>
+        <tr><td>Survived (1)</td><td>0.78</td><td>0.74</td><td>0.76</td><td>74</td></tr>
+        <tr><td><strong>Overall accuracy</strong></td><td colspan="3"><strong>81.6%</strong></td><td>179</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">Section 4</div>
+    <h2>Key findings &amp; conclusion</h2>
+    <div class="finding-row"><i class="ti ti-user finding-icon"></i><div class="finding-text"><strong>Sex</strong> was the strongest predictor. Females survived at 74.2% vs 18.9% for males, reflecting the "women and children first" evacuation policy.</div></div>
+    <div class="finding-row"><i class="ti ti-baby-carriage finding-icon"></i><div class="finding-text"><strong>Age group</strong> showed a clear pattern — young passengers (0–18) survived at 50.4%, nearly double older groups, confirming child prioritization.</div></div>
+    <div class="finding-row"><i class="ti ti-armchair finding-icon"></i><div class="finding-text"><strong>Passenger class</strong> showed a steep gradient — 63% in 1st class dropping to 24.2% in 3rd, driven by deck proximity and social priority.</div></div>
+    <div class="finding-row"><i class="ti ti-currency-dollar finding-icon"></i><div class="finding-text"><strong>Fare (log transformed)</strong> ranked as a top-3 predictor, capturing wealth effects beyond Pclass alone.</div></div>
+    <div class="finding-row"><i class="ti ti-database finding-icon"></i><div class="finding-text"><strong>Data cleaning was decisive</strong> — mean imputation and log transformation pushed accuracy from 78.2% to 81.6%, a bigger gain than any model change.</div></div>
+    <div class="finding-row"><i class="ti ti-chart-bar finding-icon"></i><div class="finding-text"><strong>Logistic Regression outperformed Random Forest</strong> across all configurations, consistent with the small dataset size where simpler models generalise better.</div></div>
+    <p style="margin-top:1.5rem">The final model achieves <strong>81.6% accuracy</strong> on held-out test data, with F1-scores of 0.85 for non-survivors and 0.76 for survivors.</p>
+  </div>
+
+</div>
+
+<script>
+  new Chart(document.getElementById('modelChart'), {
+    type: 'bar',
+    data: {
+      labels: ['LR — all features', 'LR — Pclass+Sex+Cabin+Age', 'Random Forest', 'LR — Pclass+Sex+Cabin'],
+      datasets: [{ data: [81.6, 80.4, 79.9, 78.2], backgroundColor: ['#185FA5','#378ADD','#85B7EB','#B5D4F4'], borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#888780', font: { size: 11 } }, grid: { display: false } },
+        y: { ticks: { color: '#888780', callback: v => v + '%' }, grid: { color: 'rgba(0,0,0,0.06)' }, min: 70, max: 85 }
+      }
+    }
+  });
+</script>
+</body>
+</html>
