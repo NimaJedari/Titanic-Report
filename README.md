@@ -4,7 +4,7 @@ Key techniques applied:
 
 Data cleaning — mean imputation for Age, log transformation for Fare, binary encoding for Cabin
 EDA — feature importance ranking via Random Forest, survival rate analysis across key predictors
-Modeling — Logistic Regression, Generalized Additive Models (GAM) and Random Forest, with hyperparameter tuning via GridSearchCV
+Modeling — Logistic Regression and Random Forest
 Best model — Logistic Regression with all features achieved 81.6% accuracy on held-out test data
 
 Tools: Python, scikit-learn, pandas, matplotlib, pygam, Github
