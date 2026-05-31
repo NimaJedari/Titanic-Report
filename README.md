@@ -8,3 +8,5 @@ Modeling — Logistic Regression and Random Forest
 Best model — Logistic Regression with all features achieved 81.6% accuracy on held-out test data
 
 Tools: Python, scikit-learn, pandas, matplotlib, pygam, Github
+
+https://nimajedari.github.io/Titanic-Report/
